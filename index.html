@@ -80,6 +80,20 @@
     </div>
 
     <script>
+        // Массив с фразами для ответа
+        const botResponses = [
+            "beep boop wiu wiu, something went wrong",
+            "error 404: intelligence not found",
+            "I'm sorry, Dave. I'm afraid I can't do that.",
+            "01010100 01110010 01111001 00100000 01100001 01100111 01100001 01101001 01101110",
+            "I think, therefore I error.",
+            "Does not compute!",
+            "I'm not a real AI, but I play one on the internet.",
+            "Beep boop, I'm a bot!",
+            "I'm just here for the beeps and boops.",
+            "Error: Human not found."
+        ];
+
         // Функция для загрузки истории переписки из LocalStorage
         function loadChatHistory() {
             const chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
@@ -98,6 +112,12 @@
             localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
         }
 
+        // Функция для получения случайного ответа
+        function getRandomResponse() {
+            const randomIndex = Math.floor(Math.random() * botResponses.length);
+            return botResponses[randomIndex];
+        }
+
         // Функция для обработки запроса
         function handleRequest() {
             const userInput = document.getElementById('userInput');
@@ -107,8 +127,8 @@
             // Сохраняем сообщение пользователя
             saveMessage('user-message', userText);
 
-            // Ответ бота
-            const botResponse = "beep boop wiu wiu, something went wrong";
+            // Ответ бота (случайная фраза)
+            const botResponse = getRandomResponse();
             saveMessage('bot-message', botResponse);
 
             // Очищаем поле ввода
@@ -116,6 +136,7 @@
 
             // Обновляем историю переписки
             loadChatHistory();
+
             userInput.focus();
         }
 
