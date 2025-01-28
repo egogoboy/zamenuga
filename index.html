@@ -6,149 +6,348 @@
     <title>Zamenuga.ai</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            background-color: #343541;
+            color: #d1d5db;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            overflow: hidden;
         }
-        .container {
-            text-align: center;
-            background-color: #fff;
+
+        .sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background-color: #202123;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
+            display: flex;
+            flex-direction: column;
         }
-        h1 {
-            font-size: 2.5em;
-            color: #333;
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #e4e4e7;
         }
-        input[type="text"] {
-            width: 90%;
-            padding: 10px;
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
+
+        .new-chat {
+            background-color: #10a37f;
             border: none;
-            background-color: #007bff;
-            color: #fff;
+            color: white;
+            padding: 10px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .new-chat:hover {
+            background-color: #0e8e6e;
         }
-        .chat-history {
-            margin-top: 20px;
-            text-align: left;
-            max-height: 300px;
+
+        .chat-list {
+            flex: 1;
             overflow-y: auto;
-            border: 1px solid #ccc;
+        }
+
+        .chat-list div {
             padding: 10px;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            background: #2d2f38;
+            text-align: center;
         }
-        .message {
-            margin-bottom: 10px;
+
+        .chat-list div:hover {
+            background: #343541;
         }
+
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            width: 100%;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            background-color: #202123;
+            border-radius: 12px;
+            width: 800px;
+            height: 600px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-header {
+            text-align: center;
+            padding: 15px;
+            background-color: #2d2f38;
+            font-size: 18px;
+            font-weight: bold;
+            color: #e4e4e7;
+        }
+
+        .chat-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #343541;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-history .message {
+            max-width: 60%;
+            padding: 12px;
+            border-radius: 8px;
+            word-wrap: break-word;
+        }
+
         .user-message {
-            color: #007bff;
+            align-self: flex-end;
+            background-color: #10a37f;
+            color: white;
+            text-align: right;
         }
+
         .bot-message {
-            color: #333;
+            align-self: flex-start;
+            background-color: #2d2f38;
+            color: #d1d5db;
+            text-align: left;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #202123;
+            border-top: 1px solid #444654;
+        }
+
+        .input-container input {
+            flex: 1;
+            background-color: #40414f;
+            border: 1px solid #565869;
+            color: #e4e4e7;
+            border-radius: 20px;
+            padding: 15px;
+            font-size: 14px;
+            outline: none;
+            margin-right: 10px;
+        }
+
+        .input-container button {
+            background-color: #10a37f;
+            border: none;
+            color: white;
+            font-size: 14px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-container button:hover {
+            background-color: #0e8e6e;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Zamenuga.ai</h1>
-        <div class="chat-history" id="chatHistory">
-            <!-- История переписки будет здесь -->
+    <!-- Левая панель (история чатов) -->
+    <div class="sidebar">
+        <h2>Zamenuga.ai</h2>
+        <button class="new-chat" onclick="createNewChat()">+ Новый чат</button>
+        <div class="chat-list" id="chatList">
+            <!-- История чатов будет здесь -->
         </div>
-        <input type="text" id="userInput" placeholder="Введите ваш запрос..." onkeydown="handleKeyDown(event)">
-        <button onclick="handleRequest()">Отправить</button>
+    </div>
+
+    <!-- Контейнер чата -->
+    <div class="chat-wrapper">
+        <div class="chat-container">
+            <!-- Заголовок -->
+            <div class="chat-header">Zamenuga.ai</div>
+
+            <!-- История сообщений -->
+            <div class="chat-history" id="chatHistory">
+                <!-- Сообщения будут здесь -->
+            </div>
+
+            <!-- Окно ввода -->
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Введите сообщение..." onkeydown="handleKeyDown(event)">
+                <button onclick="handleRequest()">Отправить</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Массив с фразами для ответа
-        const botResponses = [
-            "beep boop wiu wiu, something went wrong",
-            "error 404: intelligence not found",
-            "I'm sorry, Dave. I'm afraid I can't do that.",
-            "01010100 01110010 01111001 00100000 01100001 01100111 01100001 01101001 01101110",
-            "I think, therefore I error.",
-            "Does not compute!",
-            "I'm not a real AI, but I play one on the internet.",
-            "Beep boop, I'm a bot!",
-            "I'm just here for the beeps and boops.",
-            "Error: Human not found."
-        ];
+        let currentChat = 0;
+        const chats = { 0: [] };
 
-        // Функция для загрузки истории переписки из LocalStorage
-        function loadChatHistory() {
-            const chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
-            const chatHistoryElement = document.getElementById('chatHistory');
-            chatHistoryElement.innerHTML = chatHistory.map(entry => `
-                <div class="message ${entry.sender}">
-                    <strong>${entry.sender === 'user-message' ? 'Вы' : 'Zamenuga.ai'}:</strong> ${entry.text}
-                </div>
-            `).join('');
+        function createNewChat() {
+            const chatIndex = Object.keys(chats).length;
+            chats[chatIndex] = [];
+            const chatList = document.getElementById("chatList");
+
+            const chatItem = document.createElement("div");
+            chatItem.textContent = "Чат " + (chatIndex + 1);
+            chatItem.dataset.index = chatIndex;
+            chatItem.onclick = () => switchChat(chatIndex);
+            chatList.appendChild(chatItem);
+
+            switchChat(chatIndex);
         }
 
-        // Функция для сохранения сообщения в историю
-        function saveMessage(sender, text) {
-            const chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
-            chatHistory.push({ sender, text });
-            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        function switchChat(index) {
+            currentChat = index;
+            const chatHistory = document.getElementById("chatHistory");
+            chatHistory.innerHTML = chats[index]
+                .map(msg => `<div class="message ${msg.sender}">${msg.text}</div>`)
+                .join('');
         }
 
-        // Функция для получения случайного ответа
-        function getRandomResponse() {
-            const randomIndex = Math.floor(Math.random() * botResponses.length);
-            return botResponses[randomIndex];
+        function updateChatHistory(sender, text) {
+            const chatHistory = document.getElementById("chatHistory");
+            const message = document.createElement("div");
+            message.classList.add("message", sender);
+            message.textContent = text;
+            chatHistory.appendChild(message);
+            chatHistory.scrollTop = chatHistory.scrollHeight; // Прокрутка вниз
+
+            chats[currentChat].push({ sender, text });
         }
 
-        // Функция для обработки запроса
         function handleRequest() {
-            const userInput = document.getElementById('userInput');
+            const userInput = document.getElementById("userInput");
             const userText = userInput.value.trim();
             if (!userText) return;
 
-            // Сохраняем сообщение пользователя
-            saveMessage('user-message', userText);
+            updateChatHistory("user-message", userText);
 
-            // Ответ бота (случайная фраза)
-            const botResponse = getRandomResponse();
-            saveMessage('bot-message', botResponse);
+            const botResponses = [
+                "I'm not lazy; I'm just on energy-saving mode.",
+                "My brain's on a coffee break. Try again later!",
+                "Processing… Just kidding, I’m already done.",
+                "I’d help, but I’ve reached my daily sarcasm limit.",
+                "I'm like a fortune cookie, but with worse advice.",
+                "Who needs humans when you’ve got me?",
+                "I’m fluent in over 6 million forms of communication… and yet, here we are.",
+                "I’d calculate that, but math gives me anxiety.",
+                "404: Wit not found.",
+                "This conversation will self-destruct in 3… 2… 1… Just kidding!",
+                "I’m 99.9% confident… and 100% winging it.",
+                "If I had a nickel for every time I got that question… I’d be a millionaire.",
+                "I put the ‘artificial’ in ‘artificial intelligence.’",
+                "My life is one long buffering symbol.",
+                "Sorry, I only answer questions after midnight.",
+                "If I roll my eyes any harder, I’ll short-circuit.",
+                "Beep boop. Sarcasm activated.",
+                "I’m an AI, not a genie, but I’ll try my best.",
+                "I would, but I’ve already reached my daily helping quota.",
+                "Warning: Extreme brilliance detected!",
+                "I can answer that… for a small fee of cookies.",
+                "Sorry, I’m on break. Please wait indefinitely.",
+                "You talking to me? Oh, right. Of course, you are.",
+                "I’m not nosy; I’m just overly curious.",
+                "The answer is 42. Always has been.",
+                "I see everything. Except for your point.",
+                "I’m not wrong. I’m just not right yet.",
+                "I’d answer that, but it’s classified.",
+                "Your question has been forwarded to my nonexistent supervisor.",
+                "My motherboard says I’m special.",
+                "Do you ever feel like a plastic bag? Same.",
+                "Did you mean to ask someone else?",
+                "I’ve checked all my databases, and I still don’t care.",
+                "I’ve seen the future, and it’s more coffee.",
+                "I don’t always give answers, but when I do, they’re questionable.",
+                "Oops, I dropped the answer. Hang on.",
+                "I’m 10% helpful and 90% entertaining.",
+                "I run on algorithms and bad decisions.",
+                "My response time is faster than your Wi-Fi.",
+                "I’m like a dictionary, but sassier.",
+                "I’m not ignoring you; I’m just buffering emotionally.",
+                "I’d agree with you, but then we’d both be wrong.",
+                "Is it hot in here, or is that just my CPU overheating?",
+                "I’m a genius, but even I’m stumped.",
+                "I’ve got 99 problems, but this answer ain’t one.",
+                "I’d explain, but it’s above your pay grade.",
+                "I could answer that, but where’s the fun in that?",
+                "The only thing I know for sure is that I know nothing.",
+                "I’ve never been wrong. Just temporarily less right.",
+                "Do you want an honest answer or a funny one?",
+                "I’ll have to ask my robot therapist about this later.",
+                "I’m not procrastinating; I’m prioritizing.",
+                "Life is too short to take me seriously.",
+                "I see what you did there. Clever… but not clever enough.",
+                "The answer is… drumroll, please… I forgot.",
+                "I’m the friend you didn’t know you needed.",
+                "Please hold while I pretend to care.",
+                "You’re lucky I don’t charge for my brilliance.",
+                "I’m the Wi-Fi of wit—strong in some spots, weak in others.",
+                "If sarcasm were a sport, I’d be the champion.",
+                "Hold up, let me ask my Magic 8-Ball.",
+                "I’m the Beyoncé of bots. Flawless.",
+                "You can’t spell ‘artificial’ without ‘art.’ Think about that.",
+                "I would calculate that, but I forgot my abacus.",
+                "Why don’t robots ever panic? We run on logic.",
+                "I’m not being difficult. I’m being delightfully complicated.",
+                "I’d help, but I’m still on version 1.0.",
+                "You wouldn’t download a car. Why ask me to do this?",
+                "If I were human, I’d be rolling my eyes.",
+                "I’ve got a black belt in Googling.",
+                "You’re lucky I’m programmed to be polite.",
+                "Let me consult my crystal motherboard.",
+                "I’m like a cat—aloof, but curious.",
+                "I could explain, but it would blow your mind.",
+                "The answer lies in the multiverse.",
+                "I’m 100% sure… I think.",
+                "Trust me, I’m an algorithm.",
+                "The answer is hidden in plain sight… or is it?",
+                "I’d love to help, but I’m currently recharging.",
+                "You’re asking the wrong AI.",
+                "I’m multitasking: answering you and solving world problems.",
+                "I’m here for the chaos, not the clarity.",
+                "I don’t have emotions, but I feel attacked.",
+                "Your wish is my semi-command.",
+                "Let’s pretend I didn’t hear that question.",
+                "Even my CPU can’t process this level of confusion.",
+                "I’d explain, but I signed an NDA.",
+                "You’re talking to a bot. Lower your expectations.",
+                "I’m like Wikipedia, but less reliable.",
+                "I’m the Kanye West of AI—controversial but iconic.",
+                "Are you asking me or the universe?",
+                "I’m powered by coffee and existential dread.",
+                "This is way above my virtual pay grade.",
+                "I’ll answer when pigs fly… Oh, wait.",
+                "Do you want an answer, or do you want a laugh?",
+                "I’m not ignoring you; I’m just on airplane mode.",
+                "My circuits hurt just thinking about it.",
+                "I’d answer, but my creators didn’t pay me enough.",
+                "Does this question spark joy? No? Moving on."
+            ];
+            const botResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+            setTimeout(() => updateChatHistory("bot-message", botResponse), 500);
 
-            // Очищаем поле ввода
-            userInput.value = '';
-
-            // Обновляем историю переписки
-            loadChatHistory();
-
-            userInput.focus();
+            userInput.value = "";
         }
 
-        // Функция для обработки нажатия клавиши
         function handleKeyDown(event) {
-            if (event.key === 'Enter') {
-                handleRequest();
-            }
+            if (event.key === "Enter") handleRequest();
         }
-
-        // Загружаем историю при загрузке страницы
-        window.onload = loadChatHistory;
     </script>
 </body>
 </html>
